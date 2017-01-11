@@ -24,6 +24,7 @@ class Videoto3D:
             #cv2.imwrite('file{}.png'.format(i), gray[0])
 
         cap.release()
+        return np.array(gray)
 
     def get_UCF_classname(self, filename):
         return filename[2:filename.find('_', 2)]
