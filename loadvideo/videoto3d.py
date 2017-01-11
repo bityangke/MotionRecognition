@@ -27,5 +27,4 @@ class Videoto3D:
         return np.array(gray)
 
     def get_UCF_classname(self, filename):
-        return filename[2:filename.find('_', 2)]
-
+        return filename[filename.find('_') + 1:filename.find('_', 2)]
