@@ -60,9 +60,7 @@ def loaddata(video_dir, vid3d, nclass, result_dir):
         if filename == '.DS_Store':
             continue
         name = os.path.join(video_dir, filename)
-        #print('loading video:{}'.format(name))
         label = vid3d.get_UCF_classname(filename)
-        #print('label:{}'.format(label))
         if label not in labellist:
             if len(labellist) >= nclass:
                 continue
@@ -80,10 +78,11 @@ def loaddata(video_dir, vid3d, nclass, result_dir):
             if label == labels[i]:
                 labels[i] = num
     return np.array(X).transpose((0, 2, 3, 1)), labels
+    #color-> (0, 2, 3, 4, 1)
 
 
 def main():
-    parser = argparse.ArgumentParser(description='3D convolution')
+    parser = argparse.ArgumentParser(description='simple 3D convolution for action recognition')
     parser.add_argument('--batch', type=int, default=128)
     parser.add_argument('--epoch', type=int, default=100)
     parser.add_argument('--videos', type=str, default='videos',
