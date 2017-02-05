@@ -47,7 +47,7 @@ def save_history(history, result_dir):
         for i in range(nb_epoch):
             fp.write('{}\t{}\t{}\t{}\t{}\n'.format(i, loss[i], acc[i], val_loss[i], val_acc[i]))
 
-def loaddata(video_dir, vid3d, nclass, result_dir):
+def loaddata(video_dir, vid3d, nclass, result_dir, color=False, skip=True):
     files = os.listdir(video_dir)
     X = []
     labels = []
@@ -66,7 +66,7 @@ def loaddata(video_dir, vid3d, nclass, result_dir):
                 continue
             labellist.append(label)
         labels.append(label)
-        X.append(vid3d.video3d(name))
+        X.append(vid3d.video3d(name, color=color, skip=skip))
 
     pbar.close()
     with open(os.path.join(result_dir, 'classes.txt'), 'w') as fp:
@@ -77,8 +77,10 @@ def loaddata(video_dir, vid3d, nclass, result_dir):
         for i in range(len(labels)):
             if label == labels[i]:
                 labels[i] = num
-    return np.array(X).transpose((0, 2, 3, 1)), labels
-    #color-> (0, 2, 3, 4, 1)
+    if color:
+        return np.array(X).transpose((0, 2, 3, 1)), labels
+    else:
+        return np.array(X).transpose((0, 2, 3, 4, 1)), labels
 
 
 def main():
@@ -89,12 +91,14 @@ def main():
                         help='directory where videos are stored')
     parser.add_argument('--nclass', type=int, default=101)
     parser.add_argument('--output', type=str, required=True)
+    parser.add_argument('--color', type=bool, defualt=False)
+    parser.add_argument('--skip', type=bool, defualt=True)
     args = parser.parse_args()
 
     img_rows, img_cols, frames = 32, 32, 10
 
     vid3d = videoto3d.Videoto3D(img_rows, img_cols, frames)
-    x, y = loaddata(args.videos, vid3d, args.nclass, args.output)
+    x, y = loaddata(args.videos, vid3d, args.nclass, args.output, args.color, args.skip)
     X = x.reshape((x.shape[0], img_rows, img_cols, frames, 1))
     nb_classes = max(y) + 1
     Y = np_utils.to_categorical(y, nb_classes)
